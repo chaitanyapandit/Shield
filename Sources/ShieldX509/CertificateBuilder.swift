@@ -267,6 +267,17 @@ public extension Certificate {
       return try addExtension(value: SubjectKeyIdentifier(value: value))
     }
 
+    public func computeAuthorityKeyIdentifier() throws -> Builder {
+
+      guard let subjectPublicKey = subjectPublicKeyInfo?.subjectPublicKey else {
+        throw Error.missingParameter("subjectPublicKeyInfo.subjectPublicKey")
+      }
+
+      let keyIdentifier = Digester.digest(subjectPublicKey, using: .sha1)
+
+      return try authorityKeyIdentifier(keyIdentifier)
+    }
+
     public func authorityKeyIdentifier(
       _ value: KeyIdentifier,
       certIssuer: GeneralNames? = nil,
